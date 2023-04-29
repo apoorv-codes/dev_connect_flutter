@@ -1,6 +1,7 @@
-# dev_connect
+# Dev Connect
+## Lets Code Together
 
-A developers community application for making projects
+Dev connect is a developer community in which we use machine learning to connect developer and Project owners based on user information.
 
 ## Getting Started
 
@@ -14,3 +15,8 @@ A few resources to get you started if this is your first Flutter project:
 For help getting started with Flutter development, view the
 [online documentation](https://docs.flutter.dev/), which offers tutorials,
 samples, guidance on mobile development, and a full API reference.
+
+
+# Setup ENV for the project
+- create a .env file in project root
+- in .env create a variable `BACKEND = "https://devconnect.cyclic.app/api/"`
