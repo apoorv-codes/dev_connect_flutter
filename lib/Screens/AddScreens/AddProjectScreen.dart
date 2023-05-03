@@ -26,7 +26,7 @@ class _AddProjectScreenState extends State<AddProjectScreen> {
   List<Tech> _techs = [];
   List<Tech> _selectedTech = [];
 
-  Future<void> _createProject() async {
+  Future<void> _createProject(List<Tech> selectedTechs) async {
     final SharedPreferences prefs = await _prefs;
     var dur = int.parse(projectDurationController.text);
 
@@ -39,7 +39,7 @@ class _AddProjectScreenState extends State<AddProjectScreen> {
     }
 
     await UserServices().createProjects(prefs.getString('token').toString(),
-        projectNameController.text, _selectedTech, dur.toString());
+        projectNameController.text, selectedTechs, dur.toString());
   }
 
   Future<void> _getAllTech() async {
@@ -66,20 +66,51 @@ class _AddProjectScreenState extends State<AddProjectScreen> {
         children: [
           Row(
             children: [
-              const Padding(
-                padding: EdgeInsets.symmetric(vertical: 16, horizontal: 18),
-                child: Text(
-                  "Add Projects",
-                  style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+              Padding(
+                padding:
+                    const EdgeInsets.symmetric(vertical: 8.0, horizontal: 12.0),
+                child: TextButton(
+                  onPressed: () {
+                    if (_techs.length != 0)
+                      _techs.removeRange(0, _techs.indexOf(_techs.last));
+                    Navigator.pop(context);
+                  },
+                  child: const Text(
+                    "Cancel",
+                    style: TextStyle(color: Colors.white, fontSize: 18.0),
+                    textAlign: TextAlign.center,
+                  ),
                 ),
               ),
               const Spacer(),
-              IconButton(
-                onPressed: () {
-                  _techs.removeRange(0, _techs.indexOf(_techs.last));
-                  Navigator.pop(context);
-                },
-                icon: Icon(Icons.close),
+              const Padding(
+                padding: EdgeInsets.symmetric(vertical: 16, horizontal: 12),
+                child: Text(
+                  "Add Projects",
+                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                ),
+              ),
+              const Spacer(),
+              Padding(
+                padding: const EdgeInsets.symmetric(vertical: 8.0),
+                child: TextButton(
+                    onPressed: () {
+                      _createProject(_selectedTech);
+                      if (_techs.length != 0)
+                        _techs.removeRange(0, _techs.indexOf(_techs.last));
+                      Navigator.pop(context);
+                    },
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 10, vertical: 8),
+                      child: const Center(
+                        child: Text(
+                          "Add",
+                          style: TextStyle(fontSize: 18.0),
+                          textAlign: TextAlign.center,
+                        ),
+                      ),
+                    )),
               ),
             ],
           ),
@@ -139,65 +170,50 @@ class _AddProjectScreenState extends State<AddProjectScreen> {
                     )),
                   ],
                 ),
-                Padding(
-                  padding: const EdgeInsets.all(16.0),
-                  child: SingleChildScrollView(
-                    scrollDirection: Axis.vertical,
-                    child: Wrap(
-                      spacing: 4,
-                      runSpacing: 4,
-                      children: _techs != null
-                          ? _techs.isNotEmpty
-                          ? List.generate(_techs.length, (tech) {
-                        return FilterChip(
-                          onSelected: (value) {
-                            setState(() {
-                              _techs[tech].isSelected = !(_techs[tech].isSelected ?? false);
-                            });
-                            if (!_selectedTech.contains(_techs[tech])) {
-                              _selectedTech.add(_techs[tech]);
-                            } else {
-                              _selectedTech.remove(_techs[tech]);
-                            }
-                          },
-                          selected: _techs[tech].isSelected ?? false,
-                          label: Text(_techs[tech].name),
-                        );
-                      })
-                          : [
-                        const Center(
-                            child: Text(
-                              "You have not shown interest in any tech yet",
-                            ))
-                      ]
-                          : [
-                        const Center(child: Text("Unable to Fetch Interests"))
-                      ],
+                Container(
+                  height: MediaQuery.of(context).size.height * 0.52,
+                  child: Padding(
+                    padding: const EdgeInsets.all(16.0),
+                    child: SingleChildScrollView(
+                      scrollDirection: Axis.vertical,
+                      child: Wrap(
+                        spacing: 4,
+                        runSpacing: 4,
+                        children: _techs != null
+                            ? _techs.isNotEmpty
+                                ? List.generate(_techs.length, (tech) {
+                                    return FilterChip(
+                                      onSelected: (value) {
+                                        setState(() {
+                                          _techs[tech].isSelected =
+                                              !(_techs[tech].isSelected ??
+                                                  false);
+                                        });
+                                        if (!_selectedTech
+                                            .contains(_techs[tech])) {
+                                          _selectedTech.add(_techs[tech]);
+                                        } else {
+                                          _selectedTech.remove(_techs[tech]);
+                                        }
+                                      },
+                                      selected:
+                                          _techs[tech].isSelected ?? false,
+                                      label: Text(_techs[tech].name),
+                                    );
+                                  })
+                                : [
+                                    const Center(
+                                        child: Text(
+                                      "You have not shown interest in any tech yet",
+                                    ))
+                                  ]
+                            : [
+                                const Center(
+                                    child: Text("Unable to Fetch Interests"))
+                              ],
+                      ),
                     ),
                   ),
-                ),
-                Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 8.0),
-                  child: TextButton(
-                      onPressed: () async {
-                        await _createProject();
-                      },
-                      child: Container(
-                        decoration: const BoxDecoration(
-                            borderRadius: BorderRadius.all(Radius.circular(10)),
-                            color: Colors.black),
-                        width: 200,
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 40, vertical: 15),
-                        child: const Center(
-                          child: Text(
-                            "Add Project",
-                            style:
-                                TextStyle(color: Colors.white, fontSize: 18.0),
-                            textAlign: TextAlign.center,
-                          ),
-                        ),
-                      )),
                 ),
               ],
             ),

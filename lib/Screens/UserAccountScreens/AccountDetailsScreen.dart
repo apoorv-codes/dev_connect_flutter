@@ -51,9 +51,12 @@ class _AccountDetailsScreenState extends State<AccountDetailsScreen> {
     var projectsData = await UserServices()
         .getUserProjects(prefs.getString('token').toString());
 
-    projects = projectsData!;
+    projects = projectsData;
     for (var tech in JsonDecoder().convert(prefs.getString('tech')!)) {
-      techs.add(Tech(name: tech['name'] ?? "" , score: tech['score'] ?? "", id: tech['id'] ?? ""));
+      techs.add(Tech(
+          name: tech['name'] ?? "",
+          score: tech['score'] ?? "",
+          id: tech['id'] ?? ""));
     }
 
     _isLoading = false;
@@ -85,7 +88,7 @@ class _AccountDetailsScreenState extends State<AccountDetailsScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: Padding(
-        padding: const EdgeInsets.only(top: 56.0),
+        padding: const EdgeInsets.only(top: 36.0),
         child: Column(
           children: [
             Padding(
@@ -111,9 +114,6 @@ class _AccountDetailsScreenState extends State<AccountDetailsScreen> {
                             image:
                                 AssetImage("assets/images/devconnect-logo.png"),
                             height: 40,
-                          ),
-                          SizedBox(
-                            width: 10,
                           ),
                           Text(
                             "Dev Connect",

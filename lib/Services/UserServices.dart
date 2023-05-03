@@ -10,6 +10,7 @@ import 'package:http/http.dart' as http;
 
 class UserServices {
   var client = http.Client();
+
   // Service to Retrieve User data and save it to local Storage
   Future<UserModel?> getUserData(String token) async {
     var uri = Uri.parse("${dotenv.env['BACKEND']!}user/getUser");

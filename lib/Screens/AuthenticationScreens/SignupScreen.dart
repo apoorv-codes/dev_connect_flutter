@@ -141,7 +141,7 @@ class _SignupScreenState extends State<SignupScreen> {
                   child: Container(
                     decoration: const BoxDecoration(
                         borderRadius: BorderRadius.all(Radius.circular(10)),
-                        color: Colors.black),
+                        color: Colors.yellow),
                     width: 220,
                     padding: const EdgeInsets.symmetric(
                         horizontal: 40, vertical: 15),
@@ -149,7 +149,7 @@ class _SignupScreenState extends State<SignupScreen> {
                       children: const [
                         Text(
                           'Continue',
-                          style: TextStyle(color: Colors.white, fontSize: 18.0),
+                          style: TextStyle(color: Colors.black, fontSize: 18.0),
                           textAlign: TextAlign.center,
                         ),
                         SizedBox(
@@ -157,7 +157,7 @@ class _SignupScreenState extends State<SignupScreen> {
                         ),
                         Icon(
                           Icons.east,
-                          color: Colors.white,
+                          color: Colors.black,
                         )
                       ],
                     ),

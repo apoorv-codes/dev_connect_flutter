@@ -1,4 +1,5 @@
 import 'package:dev_connect/Model/ProjectModel.dart';
+import 'package:dev_connect/Model/TechModel.dart';
 import 'package:dev_connect/widgets/ProjectListItemWidget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/src/widgets/container.dart';
@@ -18,6 +19,12 @@ class _ProjectTabState extends State<ProjectTab> {
         name: "Test",
         owner: "Apoorv",
         duration: "2",
+        tech: [
+          Tech(id: "0", name: "tech"),
+          Tech(id: "1", name: "tech"),
+          Tech(id: "2", name: "tech"),
+          Tech(id: "3", name: "tech")
+        ],
         createdAt: DateTime.now(),
         updatedAt: DateTime.now(),
         v: 1),
@@ -124,7 +131,7 @@ class _ProjectTabState extends State<ProjectTab> {
   @override
   Widget build(BuildContext context) {
     return Container(
-      height: MediaQuery.of(context).size.height - (220),
+      height: MediaQuery.of(context).size.height * 0.7699,
       child: SingleChildScrollView(
         scrollDirection: Axis.vertical,
         child: Column(
@@ -135,7 +142,7 @@ class _ProjectTabState extends State<ProjectTab> {
                 ? Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 10.0),
                     child: Row(
-                      children: [
+                      children: const [
                         Text(
                           "Projects",
                           style: TextStyle(

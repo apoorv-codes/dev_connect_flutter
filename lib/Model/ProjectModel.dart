@@ -8,8 +8,7 @@ ProjectModel projectModelFromJson(String str) =>
 
 String projectModelToJson(ProjectModel data) => json.encode(data.toJson());
 
-
- /// TODO: we need to add number of members required by the owner
+// TODO: we need to add number of members required by the owner
 class ProjectModel {
   ProjectModel({
     required this.id,
@@ -27,7 +26,7 @@ class ProjectModel {
   String name;
   List<Tech>? tech = [];
   String owner;
-  List<dynamic>? users = [];
+  List<UserModel>? users = [];
   String duration;
   DateTime createdAt;
   DateTime updatedAt;
@@ -39,9 +38,9 @@ class ProjectModel {
         tech: List<Tech>.from(json["tech"] != null
             ? json["tech"].map((x) => Tech.fromJson(x))
             : []),
-        owner: json["owner"],
-        // users:
-        // List<dynamic>.from(json["users"].map((x) => UserModel.fromJson(x))),
+        owner: json["owner"]["first_name"],
+        users: List<UserModel>.from(
+            json["users"].map((x) => UserModel.fromJson(x))),
         duration: json["duration"],
         createdAt: DateTime.parse(json["createdAt"]),
         updatedAt: DateTime.parse(json["updatedAt"]),

@@ -60,6 +60,7 @@ class _TabsScreenState extends State<TabsScreen> {
 
   static const TextStyle optionStyle =
       TextStyle(fontSize: 30, fontWeight: FontWeight.bold);
+
 // List of tabs
   static const List<Widget> _widgetOptions = <Widget>[
     HomeTab(),
@@ -69,6 +70,7 @@ class _TabsScreenState extends State<TabsScreen> {
   ];
 
   static const TAB_NAMES = ["Dev Connect", "Favourite", "Explore", "Projects"];
+
   void _onItemTapped(int index) {
     setState(() {
       _selectedIndex = index;
@@ -93,7 +95,7 @@ class _TabsScreenState extends State<TabsScreen> {
       onWillPop: () async => false,
       child: Scaffold(
         body: Padding(
-          padding: const EdgeInsets.only(top: 56),
+          padding: const EdgeInsets.only(top: 36),
           child: Column(
             children: [
               Padding(
@@ -112,9 +114,6 @@ class _TabsScreenState extends State<TabsScreen> {
                                   "assets/images/devconnect-logo.png"),
                               height: 40,
                             ),
-                            SizedBox(
-                              width: 10,
-                            ),
                             Text(
                               "Dev Connect",
                               style: TextStyle(
@@ -130,8 +129,7 @@ class _TabsScreenState extends State<TabsScreen> {
                         Navigator.push(
                             context,
                             MaterialPageRoute(
-                                builder: (context) =>
-                                    const AccountDetailsScreen()));
+                                builder: (context) => AccountDetailsScreen()));
                       },
                       icon: const Icon(
                         Icons.person,
@@ -156,21 +154,27 @@ class _TabsScreenState extends State<TabsScreen> {
           onPressed: () {
             showModalBottomSheet<void>(
               context: context,
-              constraints: BoxConstraints(minHeight: 800),
+              isScrollControlled: true,
+              constraints: BoxConstraints(
+                  maxHeight: MediaQuery.of(context).size.height * 0.8,
+                  minHeight: MediaQuery.of(context).size.height * 0.5),
               builder: (BuildContext context) {
-                return SingleChildScrollView(child: AddProjectScreen());
+                return AddProjectScreen();
               },
             );
           },
           shape: CircleBorder(),
-          backgroundColor: Colors.blue.shade900,
+          backgroundColor: Colors.yellow.shade400,
           tooltip: 'Increment',
-          child: Icon(Icons.add),
+          child: Icon(
+            Icons.add,
+            color: Colors.black,
+          ),
           elevation: 2.0,
         ),
 
         bottomNavigationBar: BottomNavigationBar(
-          backgroundColor: Colors.yellowAccent,
+          backgroundColor: Colors.teal.shade900,
           items: const <BottomNavigationBarItem>[
             BottomNavigationBarItem(
               icon: Icon(Icons.home),
@@ -190,8 +194,8 @@ class _TabsScreenState extends State<TabsScreen> {
             ),
           ],
           currentIndex: _selectedIndex,
-          unselectedItemColor: Colors.black,
-          selectedItemColor: Colors.teal,
+          unselectedItemColor: Colors.teal.shade400,
+          selectedItemColor: Colors.tealAccent.shade100,
           enableFeedback: true,
           type: BottomNavigationBarType.fixed,
           onTap: _onItemTapped,

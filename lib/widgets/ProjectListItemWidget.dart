@@ -1,4 +1,6 @@
 import 'package:dev_connect/Model/ProjectModel.dart';
+import 'package:dev_connect/Model/TechModel.dart';
+import 'package:dev_connect/Screens/ProjectScreens/ProjectDetailScreen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/src/widgets/framework.dart';
 import 'package:flutter/src/widgets/placeholder.dart';
@@ -16,6 +18,17 @@ class ProjectListItem extends StatefulWidget {
 }
 
 class _ProjectListItemState extends State<ProjectListItem> {
+  late int dur;
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    setState(() {
+      dur = int.parse(widget.projectModel.duration);
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     double height = MediaQuery.of(context).size.height;
@@ -37,88 +50,77 @@ class _ProjectListItemState extends State<ProjectListItem> {
           ),
           child: Card(
             child: Padding(
-                padding: const EdgeInsets.all(10.0),
-                child: Row(children: [
+              padding: const EdgeInsets.all(10.0),
+              child: Row(
+                children: [
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Row(
                         mainAxisAlignment: MainAxisAlignment.center,
-                        children: const [
-                          Text("Project Name",
-                              style: TextStyle(
+                        children: [
+                          Text(widget.projectModel.name,
+                              style: const TextStyle(
                                   fontSize: 18, fontWeight: FontWeight.w600)),
-                          SizedBox(width: 12),
+                          const SizedBox(width: 12),
                           CircleAvatar(
                               radius: 12,
                               child: Text(
-                                "TE",
-                                style: TextStyle(fontSize: 10),
+                                "${widget.projectModel.owner.split(" ")[0][0]} ",
+                                style: const TextStyle(fontSize: 10),
                               )),
-                          SizedBox(width: 4),
+                          const SizedBox(width: 4),
                           Text(
-                            "Project Owner",
-                            style: TextStyle(fontSize: 12),
+                            widget.projectModel.owner,
+                            style: const TextStyle(fontSize: 12),
                           ),
                         ],
                       ),
-                      SizedBox(height: 8),
+                      const SizedBox(height: 8),
                       Wrap(
-                          spacing: 4,
-                          runSpacing: 4,
-                          alignment: WrapAlignment.start,
-                          children: [
-                            Container(
-                                padding: EdgeInsets.symmetric(
-                                    horizontal: 5, vertical: 2),
+                        spacing: 4,
+                        runSpacing: 4,
+                        alignment: WrapAlignment.start,
+                        children: List.generate(
+                          widget.projectModel.tech?.length ?? 0,
+                          (index) {
+                            return Container(
+                                padding: const EdgeInsets.all(5),
                                 decoration: BoxDecoration(
                                     borderRadius: BorderRadius.circular(5),
-                                    color: Color.fromARGB(128, 155, 155, 155)),
-                                child: const Text(
-                                  "test",
-                                  style: TextStyle(fontSize: 10),
-                                )),
-                            Container(
-                                padding: EdgeInsets.symmetric(
-                                    horizontal: 5, vertical: 2),
-                                decoration: BoxDecoration(
-                                    borderRadius: BorderRadius.circular(5),
-                                    color: Color.fromARGB(128, 155, 155, 155)),
-                                child: const Text(
-                                  "test",
-                                  style: TextStyle(fontSize: 10),
-                                )),
-                            Container(
-                                padding: EdgeInsets.symmetric(
-                                    horizontal: 5, vertical: 2),
-                                decoration: BoxDecoration(
-                                    borderRadius: BorderRadius.circular(5),
-                                    color: Color.fromARGB(128, 155, 155, 155)),
-                                child: const Text(
-                                  "test",
-                                  style: TextStyle(fontSize: 10),
-                                )),
-                            Container(
-                                padding: EdgeInsets.symmetric(
-                                    horizontal: 5, vertical: 2),
-                                decoration: BoxDecoration(
-                                    borderRadius: BorderRadius.circular(5),
-                                    color: Color.fromARGB(128, 155, 155, 155)),
-                                child: const Text(
-                                  "test",
-                                  style: TextStyle(fontSize: 10),
-                                ))
-                          ]),
-                      SizedBox(height: 8),
-                      Text("Duration: 3 Months")
+                                    color: const Color.fromARGB(
+                                        128, 155, 155, 155)),
+                                child: Text(
+                                  widget.projectModel.tech![index].name,
+                                  style: const TextStyle(fontSize: 10),
+                                ));
+                          },
+                        ),
+                      ),
+                      const SizedBox(height: 8),
+                      Text(
+                          "Duration: ${((dur / (365 * 24)).round() > 0) ? "${(dur / (365 * 24)).round()} Years" : (dur / (24 * 30)).round() > 0 ? "${(dur / (30 * 24)).round()} Months" : (dur / 24).round() > 0 ? "${(dur / 24).round()} Days" : "$dur Hrs"}")
                     ],
                   ),
                   const Spacer(),
-                  widget.isOwn
+                  (widget.isOwn
                       ? IconButton(
-                          onPressed: () {}, icon: Icon(Icons.more_horiz))
-                      : IconButton(onPressed: () {}, icon: Icon(Icons.favorite))
-                ])),
+                          onPressed: () {}, icon: const Icon(Icons.more_horiz))
+                      : IconButton(
+                          onPressed: () {}, icon: const Icon(Icons.favorite))),
+                  IconButton(
+                      onPressed: () {
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => ProjectDetail(
+                                      projectModel: widget.projectModel,
+                                    )));
+                      },
+                      icon: const Icon(Icons.chevron_right)),
+                ],
+              ),
+            ),
           ),
         )
       ],

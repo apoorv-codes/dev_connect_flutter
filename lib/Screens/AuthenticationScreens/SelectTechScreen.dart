@@ -47,7 +47,7 @@ class _SelectTechScreenState extends State<SelectTechScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: Padding(
-        padding: const EdgeInsets.only(top: 56, left: 8, right: 8, bottom: 12),
+        padding: const EdgeInsets.only(top: 36, left: 8, right: 8, bottom: 12),
         child: Column(
           children: [
             Padding(
@@ -114,7 +114,8 @@ class _SelectTechScreenState extends State<SelectTechScreen> {
                               return FilterChip(
                                 onSelected: (value) {
                                   setState(() {
-                                    _techs[tech].isSelected = !(_techs[tech].isSelected ?? false);
+                                    _techs[tech].isSelected =
+                                        !(_techs[tech].isSelected ?? false);
                                   });
                                   if (!_selectedTech.contains(_techs[tech])) {
                                     _selectedTech.add(_techs[tech]);

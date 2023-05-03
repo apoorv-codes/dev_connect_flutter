@@ -1,30 +1,15 @@
-import 'dart:ffi';
-
 import 'package:dev_connect/Model/ProjectModel.dart';
+import 'package:dev_connect/Screens/ProjectScreens/ProjectDetailScreen.dart';
 import 'package:flutter/material.dart';
 
-class ProjectCard extends StatefulWidget {
-  const ProjectCard({Key? key, required this.projectModel}) : super(key: key);
-
+class ProjectCard extends StatelessWidget {
   final ProjectModel projectModel;
 
-  @override
-  State<ProjectCard> createState() => _ProjectCardState();
-}
-
-class _ProjectCardState extends State<ProjectCard> {
-  late int dur;
-  @override
-  void initState() {
-    // TODO: implement initState
-    super.initState();
-    setState(() {
-      dur = int.parse(widget.projectModel.duration);
-    });
-  }
+  ProjectCard({super.key, required this.projectModel});
 
   @override
   Widget build(BuildContext context) {
+    var dur = int.parse(projectModel.duration);
     return Container(
       width: 240,
       height: 220,
@@ -47,7 +32,7 @@ class _ProjectCardState extends State<ProjectCard> {
               Row(
                 children: [
                   Text(
-                    widget.projectModel.name,
+                    projectModel.name,
                     style: const TextStyle(
                       fontSize: 18,
                       fontWeight: FontWeight.w700,
@@ -55,7 +40,7 @@ class _ProjectCardState extends State<ProjectCard> {
                   ),
                   const Spacer(),
                   Text(
-                    "${(DateTime.now().difference(widget.projectModel.createdAt).inDays).toString()} Days Ago",
+                    "${(DateTime.now().difference(projectModel.createdAt).inDays).toString()} Days Ago",
                     style: const TextStyle(fontSize: 12),
                   )
                 ],
@@ -66,15 +51,15 @@ class _ProjectCardState extends State<ProjectCard> {
                   spacing: 3,
                   runSpacing: 3,
                   children: List.generate(
-                    widget.projectModel.tech!.length,
+                    projectModel.tech?.length ?? 0,
                     (index) {
                       return Container(
-                          padding: EdgeInsets.all(5),
+                          padding: const EdgeInsets.all(5),
                           decoration: BoxDecoration(
                               borderRadius: BorderRadius.circular(5),
-                              color: Color.fromARGB(128, 155, 155, 155)),
+                              color: const Color.fromARGB(128, 155, 155, 155)),
                           child: Text(
-                            widget.projectModel.tech![index].name,
+                            projectModel.tech![index].name,
                             style: const TextStyle(fontSize: 10),
                           ));
                     },
@@ -97,7 +82,14 @@ class _ProjectCardState extends State<ProjectCard> {
                   Spacer(),
                   TextButton(
                     onPressed: () {
-
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => ProjectDetail(
+                            projectModel: projectModel,
+                          ),
+                        ),
+                      );
                     },
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.center,

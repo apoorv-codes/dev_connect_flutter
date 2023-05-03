@@ -12,8 +12,42 @@ Future<void> main() async {
 
   runApp(MaterialApp(
     title: "Dev Connect",
-    theme: ThemeData.light(useMaterial3: true),
-    darkTheme: ThemeData.dark(useMaterial3: true),
+    theme: ThemeData(
+      brightness: Brightness.light,
+      useMaterial3: true,
+      // scaffoldBackgroundColor: Colors.white,
+      colorSchemeSeed: Colors.blue,
+      appBarTheme: const AppBarTheme(
+        color: Colors.white,
+      ),
+    ),
+    darkTheme: ThemeData(
+      brightness: Brightness.dark,
+      useMaterial3: true,
+      scaffoldBackgroundColor: Colors.black,
+      colorSchemeSeed: Colors.blue,
+      appBarTheme: const AppBarTheme(
+        color: Colors.black,
+      ),
+    ),
     home: token != null ? const TabsScreen() : const OnboardingScreen(),
   ));
 }
+
+
+// [ ] projects
+// [ ] updateInterest
+// [ ] deleteProject
+// [ ] projectInvite
+// [ ] acceptProjectInvite
+// [ ] recommandUser
+// [x] createProject
+// [x] showInterest
+// [x] getTech
+// [x] getCreatedPrjects
+// [x] getUser
+// [-] updateProject
+// [-] upload
+// [-] updateProfile
+// [-] changePassword
+// [-] dashboard
