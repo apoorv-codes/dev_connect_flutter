@@ -30,6 +30,7 @@ class _HomeTabState extends State<HomeTab> {
   List<ProjectModel>? oProjects = [];
   int page = 1;
   var _token;
+  String name = "";
   bool _isLoading = true;
 
   void _loadData() async {
@@ -49,6 +50,7 @@ class _HomeTabState extends State<HomeTab> {
     oProjects = projectsData;
     _isLoading = false;
 
+    name = prefs.getString("firstName").toString();
     setState(() {});
   }
 
@@ -97,9 +99,25 @@ class _HomeTabState extends State<HomeTab> {
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 10.0),
                 child: Row(
+                  children: [
+                    Text(
+                      "👨‍💻 Hi, $name",
+                      style:
+                          TextStyle(fontSize: 32, fontWeight: FontWeight.w800),
+                    ),
+                    Spacer()
+                  ],
+                ),
+              ),
+              const SizedBox(
+                height: 16,
+              ),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 10.0),
+                child: Row(
                   children: const [
                     Text(
-                      "Top Techs",
+                      "📈 Top Techs",
                       style:
                           TextStyle(fontSize: 24, fontWeight: FontWeight.w600),
                     ),
@@ -136,7 +154,7 @@ class _HomeTabState extends State<HomeTab> {
                 child: Row(
                   children: const [
                     Text(
-                      "Recents",
+                      "🕒 Recents",
                       style:
                           TextStyle(fontSize: 24, fontWeight: FontWeight.w600),
                     ),
@@ -176,7 +194,7 @@ class _HomeTabState extends State<HomeTab> {
                 child: Row(
                   children: const [
                     Text(
-                      "Recommendations",
+                      "💡 Recommendations",
                       style:
                           TextStyle(fontSize: 24, fontWeight: FontWeight.w600),
                     ),
