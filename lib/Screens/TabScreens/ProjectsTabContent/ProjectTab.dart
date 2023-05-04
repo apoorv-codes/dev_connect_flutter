@@ -1,9 +1,11 @@
 import 'package:dev_connect/Model/ProjectModel.dart';
 import 'package:dev_connect/Model/TechModel.dart';
+import 'package:dev_connect/Services/UserServices.dart';
 import 'package:dev_connect/widgets/ProjectListItemWidget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/src/widgets/container.dart';
 import 'package:flutter/src/widgets/framework.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class ProjectTab extends StatefulWidget {
   const ProjectTab({super.key});
@@ -13,113 +15,21 @@ class ProjectTab extends StatefulWidget {
 }
 
 class _ProjectTabState extends State<ProjectTab> {
-  final List<ProjectModel> _projects = [
-    ProjectModel(
-        id: "1",
-        name: "Test",
-        owner: "Apoorv",
-        duration: "2",
-        tech: [
-          Tech(id: "0", name: "tech"),
-          Tech(id: "1", name: "tech"),
-          Tech(id: "2", name: "tech"),
-          Tech(id: "3", name: "tech")
-        ],
-        createdAt: DateTime.now(),
-        updatedAt: DateTime.now(),
-        v: 1),
-    ProjectModel(
-        id: "1",
-        name: "Test",
-        owner: "Apoorv",
-        duration: "2",
-        createdAt: DateTime.now(),
-        updatedAt: DateTime.now(),
-        v: 1),
-    ProjectModel(
-        id: "1",
-        name: "Test",
-        owner: "Apoorv",
-        duration: "2",
-        createdAt: DateTime.now(),
-        updatedAt: DateTime.now(),
-        v: 1),
-    ProjectModel(
-        id: "1",
-        name: "Test",
-        owner: "Apoorv",
-        duration: "2",
-        createdAt: DateTime.now(),
-        updatedAt: DateTime.now(),
-        v: 1),
-    ProjectModel(
-        id: "1",
-        name: "Test",
-        owner: "Apoorv",
-        duration: "2",
-        createdAt: DateTime.now(),
-        updatedAt: DateTime.now(),
-        v: 1),
-    ProjectModel(
-        id: "1",
-        name: "Test",
-        owner: "Apoorv",
-        duration: "2",
-        createdAt: DateTime.now(),
-        updatedAt: DateTime.now(),
-        v: 1),
-    ProjectModel(
-        id: "1",
-        name: "Test",
-        owner: "Apoorv",
-        duration: "2",
-        createdAt: DateTime.now(),
-        updatedAt: DateTime.now(),
-        v: 1),
-    ProjectModel(
-        id: "1",
-        name: "Test",
-        owner: "Apoorv",
-        duration: "2",
-        createdAt: DateTime.now(),
-        updatedAt: DateTime.now(),
-        v: 1),
-    ProjectModel(
-        id: "1",
-        name: "Test",
-        owner: "Apoorv",
-        duration: "2",
-        createdAt: DateTime.now(),
-        updatedAt: DateTime.now(),
-        v: 1),
-    ProjectModel(
-        id: "1",
-        name: "Test",
-        owner: "Apoorv",
-        duration: "2",
-        createdAt: DateTime.now(),
-        updatedAt: DateTime.now(),
-        v: 1),
-    ProjectModel(
-        id: "1",
-        name: "Test",
-        owner: "Apoorv",
-        duration: "2",
-        createdAt: DateTime.now(),
-        updatedAt: DateTime.now(),
-        v: 1),
-    ProjectModel(
-        id: "1",
-        name: "Test",
-        owner: "Apoorv",
-        duration: "2",
-        createdAt: DateTime.now(),
-        updatedAt: DateTime.now(),
-        v: 1)
-  ];
+  final Future<SharedPreferences> _prefs = SharedPreferences.getInstance();
+  bool _isLoading = true;
+  List<ProjectModel>? projects = [];
 
+// MARK: Function to get user data from the backend based on the access token and store it in the local storage
   Future<void> _getProjects() async {
-    // var projectsData = await
+    final SharedPreferences prefs = await _prefs;
+
+    var projectsData = await UserServices()
+        .getUserProjects(prefs.getString('token').toString());
+
+    projects = projectsData;
+
+    _isLoading = false;
+    setState(() {});
   }
 
   @override
@@ -137,7 +47,7 @@ class _ProjectTabState extends State<ProjectTab> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: List.generate(
-            _projects.length,
+            projects != null ? projects!.length + 1 : 0,
             (i) => i == 0
                 ? Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 10.0),
@@ -147,12 +57,16 @@ class _ProjectTabState extends State<ProjectTab> {
                           "Projects",
                           style: TextStyle(
                               fontSize: 24, fontWeight: FontWeight.w600),
-                        )
+                        ),
                       ],
                     ),
                   )
-                : ProjectListItem(
-                    projectModel: _projects[i], isOwn: i % 2 == 0),
+                : projects != null
+                    ? projects!.isNotEmpty
+                        ? ProjectListItem(
+                            projectModel: projects![i - 1], isOwn: true)
+                        : const Text("No Project Uploaded Yet")
+                    : const Text("Unable to fetch projects"),
           ),
         ),
       ),

@@ -3,8 +3,7 @@ import 'package:dev_connect/widgets/MemberListItem.dart';
 import 'package:flutter/material.dart';
 
 class ProjectInvites extends StatefulWidget {
-  final List<UserModel> users;
-
+  final List<UserModel>? users;
   const ProjectInvites({Key? key, required this.users}) : super(key: key);
 
   @override
@@ -35,7 +34,7 @@ class _ProjectInvitesState extends State<ProjectInvites> {
                   const Material(
                     type: MaterialType.transparency,
                     child: Text(
-                      "Invite Users",
+                      "Join Requests",
                       style:
                           TextStyle(fontSize: 24, fontWeight: FontWeight.w700),
                     ),
@@ -50,10 +49,12 @@ class _ProjectInvitesState extends State<ProjectInvites> {
                 scrollDirection: Axis.vertical,
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
-                  children: List.generate(
-                    widget.users.length ?? 0,
-                    (i) => MemberListItem(user: widget.users[i]),
-                  ),
+                  children: widget.users != null
+                      ? List.generate(
+                          widget.users!.length ?? 0,
+                          (i) => MemberListItem(user: widget.users![i]),
+                        )
+                      : [],
                 ),
               ),
             ),

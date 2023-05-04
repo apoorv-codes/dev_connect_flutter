@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:dev_connect/Model/ProjectModel.dart';
 import 'package:dev_connect/Model/TechModel.dart';
 import 'package:dev_connect/Model/UserModel.dart';
@@ -17,146 +19,23 @@ class ExploreTab extends StatefulWidget {
 }
 
 class _ExploreTabState extends State<ExploreTab> {
-  final List<ProjectModel> _projects = [
-    ProjectModel(
-        id: "1",
-        name: "Full",
-        owner: "Apoorv",
-        duration: "2",
-        tech: [
-          Tech(id: "1", name: "tech"),
-          Tech(id: "2", name: "tech"),
-          Tech(id: "3", name: "tech")
-        ],
-        users: [
-          UserModel(
-              firstName: "Apoorv",
-              lastName: "Verma",
-              email: "apoorv@gmail.com",
-              tech: [
-                Tech(id: "1", name: "tech"),
-                Tech(id: "2", name: "tech"),
-                Tech(id: "3", name: "tech")
-              ]),
-          UserModel(
-              firstName: "Apoorv",
-              lastName: "Verma",
-              email: "apoorv@gmail.com",
-              tech: [
-                Tech(id: "1", name: "tech"),
-                Tech(id: "2", name: "tech"),
-                Tech(id: "3", name: "tech")
-              ]),
-          UserModel(
-              firstName: "Apoorv",
-              lastName: "Verma",
-              email: "apoorv@gmail.com",
-              tech: [
-                Tech(id: "1", name: "tech"),
-                Tech(id: "2", name: "tech"),
-                Tech(id: "3", name: "tech")
-              ]),
-          UserModel(
-              firstName: "Apoorv",
-              lastName: "Verma",
-              email: "apoorv@gmail.com",
-              tech: [
-                Tech(id: "1", name: "tech"),
-                Tech(id: "2", name: "tech"),
-                Tech(id: "3", name: "tech")
-              ]),
-          UserModel(
-              firstName: "Apoorv",
-              lastName: "Verma",
-              email: "apoorv@gmail.com",
-              tech: [
-                Tech(id: "1", name: "tech"),
-                Tech(id: "2", name: "tech"),
-                Tech(id: "3", name: "tech")
-              ]),
-          UserModel(
-              firstName: "Apoorv",
-              lastName: "Verma",
-              email: "apoorv@gmail.com",
-              tech: [
-                Tech(id: "1", name: "tech"),
-                Tech(id: "2", name: "tech"),
-                Tech(id: "3", name: "tech")
-              ]),
-          UserModel(
-              firstName: "Apoorv",
-              lastName: "Verma",
-              email: "apoorv@gmail.com",
-              tech: [
-                Tech(id: "1", name: "tech"),
-                Tech(id: "2", name: "tech"),
-                Tech(id: "3", name: "tech")
-              ]),
-          UserModel(
-              firstName: "Apoorv",
-              lastName: "Verma",
-              email: "apoorv@gmail.com",
-              tech: [
-                Tech(id: "1", name: "tech"),
-                Tech(id: "2", name: "tech"),
-                Tech(id: "3", name: "tech")
-              ]),
-          UserModel(
-              firstName: "Apoorv",
-              lastName: "Verma",
-              email: "apoorv@gmail.com",
-              tech: [
-                Tech(id: "1", name: "tech"),
-                Tech(id: "2", name: "tech"),
-                Tech(id: "3", name: "tech")
-              ]),
-          UserModel(
-              firstName: "Apoorv",
-              lastName: "Verma",
-              email: "apoorv@gmail.com",
-              tech: [
-                Tech(id: "1", name: "tech"),
-                Tech(id: "2", name: "tech"),
-                Tech(id: "3", name: "tech")
-              ]),
-          UserModel(
-              firstName: "Apoorv",
-              lastName: "Verma",
-              email: "apoorv@gmail.com",
-              tech: [
-                Tech(id: "1", name: "tech"),
-                Tech(id: "2", name: "tech"),
-                Tech(id: "3", name: "tech")
-              ]),
-          UserModel(
-              firstName: "Apoorv",
-              lastName: "Verma",
-              email: "apoorv@gmail.com",
-              tech: [
-                Tech(id: "1", name: "tech"),
-                Tech(id: "2", name: "tech"),
-                Tech(id: "3", name: "tech")
-              ])
-        ],
-        createdAt: DateTime.now(),
-        updatedAt: DateTime.now(),
-        v: 1),
-    ProjectModel(
-        id: "2",
-        name: "Test",
-        owner: "Apoorv",
-        duration: "2",
-        createdAt: DateTime.now(),
-        updatedAt: DateTime.now(),
-        v: 1),
-  ];
+  List<ProjectModel>? projects = [];
   final Future<SharedPreferences> _prefs = SharedPreferences.getInstance();
+  bool _isLoading = true;
   int page = 1;
+
+  // Function to retrieve all unenrolled projects List
+
   Future<void> _getProjects() async {
     final SharedPreferences prefs = await _prefs;
 
-    var exploreProjects = ProjectService()
-        .getExploreProjectList(await prefs.getString('token').toString(), page);
+    var projectsData = await ProjectService()
+        .getExploreProjectList(prefs.getString('token').toString(), page);
+
+    projects = projectsData;
+    _isLoading = false;
+
+    setState(() {});
   }
 
   @override
@@ -174,7 +53,7 @@ class _ExploreTabState extends State<ExploreTab> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: List.generate(
-            _projects.length + 1,
+            projects != null ? projects!.length + 1 : 0,
             (i) => i == 0
                 ? Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 10.0),
@@ -184,12 +63,16 @@ class _ExploreTabState extends State<ExploreTab> {
                           "Explore",
                           style: TextStyle(
                               fontSize: 24, fontWeight: FontWeight.w600),
-                        )
+                        ),
                       ],
                     ),
                   )
-                : ProjectListItem(
-                    projectModel: _projects[i - 1], isOwn: (i - 1) % 2 == 0),
+                : projects != null
+                    ? projects!.isNotEmpty
+                        ? ProjectListItem(
+                            projectModel: projects![i - 1], isOwn: false)
+                        : const Text("No Project Uploaded Yet")
+                    : const Text("Unable to fetch projects"),
           ),
         ),
       ),

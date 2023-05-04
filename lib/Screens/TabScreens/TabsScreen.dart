@@ -41,7 +41,8 @@ class _TabsScreenState extends State<TabsScreen> {
       for (var project in userDataResponse.projects!) {
         projectList.add(project);
       }
-// user data saved here
+      // user data saved here
+      prefs.setString('uid', userDataResponse.id ?? "");
       prefs.setString('firstName', userDataResponse.firstName);
       prefs.setString('lastName', userDataResponse.lastName);
       prefs.setString('email', userDataResponse.email);

@@ -1,10 +1,24 @@
 import 'package:dev_connect/Model/UserModel.dart';
+import 'package:dev_connect/Services/ProjectsServices.dart';
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class MemberListItem extends StatelessWidget {
   final UserModel user;
+  String? projectId;
+  final Future<SharedPreferences> _prefs = SharedPreferences.getInstance();
 
-  const MemberListItem({super.key, required this.user});
+  MemberListItem({super.key, required this.user, this.projectId});
+
+  // accept invite
+  Future<void> _acceptInvite() async {
+    final SharedPreferences prefs = await _prefs;
+
+    await ProjectService().acceptProjectInvite(
+        prefs.getString('token').toString(),
+        projectId ?? "",
+        user.id.toString());
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -39,20 +53,32 @@ class MemberListItem extends StatelessWidget {
                     ),
                     SizedBox(height: 8),
                     Wrap(
-                      spacing: 8,
-                      children: [
-                        for (final tech in user.tech!)
-                          Chip(
-                            label: Text(tech.name),
-                          ),
-                      ],
+                      spacing: 3,
+                      runSpacing: 3,
+                      children: List.generate(
+                        user.tech?.length ?? 0,
+                        (index) {
+                          return Container(
+                              padding: const EdgeInsets.all(5),
+                              decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(5),
+                                  color:
+                                      const Color.fromARGB(128, 155, 155, 155)),
+                              child: Text(
+                                user.tech![index].name,
+                                style: const TextStyle(fontSize: 10),
+                              ));
+                        },
+                      ),
                     ),
                   ],
                 ),
               ),
               SizedBox(width: 8),
               IconButton(
-                onPressed: () {},
+                onPressed: () {
+                  _acceptInvite();
+                },
                 icon: Icon(
                   Icons.add,
                   color: Colors.yellow.shade200,

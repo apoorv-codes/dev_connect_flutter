@@ -307,29 +307,29 @@ class _AccountDetailsScreenState extends State<AccountDetailsScreen> {
                                   ]),
                                   // Project Section Body
                                   SingleChildScrollView(
-                                      scrollDirection: Axis.horizontal,
-                                      child: Row(
-                                        children: projects != null
-                                            ? projects!.isNotEmpty
-                                                ? List.generate(
-                                                    projects!.length,
-                                                    (project) {
-                                                    return ProjectCard(
-                                                        projectModel:
-                                                            projects![project]);
-                                                  })
-                                                : [
-                                                    const Center(
-                                                        child: Text(
-                                                      "No Projects created or joined yet",
-                                                    ))
-                                                  ]
-                                            : [
-                                                const Center(
-                                                    child: Text(
-                                                        "Unable to Fetch Projects"))
-                                              ],
-                                      ))
+                                    scrollDirection: Axis.horizontal,
+                                    child: Row(
+                                      children: projects != null
+                                          ? projects!.isNotEmpty
+                                              ? List.generate(projects!.length,
+                                                  (project) {
+                                                  return ProjectCard(
+                                                      projectModel:
+                                                          projects![project]);
+                                                })
+                                              : [
+                                                  const Center(
+                                                      child: Text(
+                                                    "No Projects created or joined yet",
+                                                  ))
+                                                ]
+                                          : [
+                                              const Center(
+                                                  child: Text(
+                                                      "Unable to Fetch Projects"))
+                                            ],
+                                    ),
+                                  ),
                                 ],
                               ),
                             ),

@@ -15,6 +15,7 @@ String userModelToJson(UserModel data) => json.encode(data.toJson());
 
 class UserModel {
   UserModel({
+    this.id,
     required this.firstName,
     required this.lastName,
     required this.email,
@@ -28,6 +29,7 @@ class UserModel {
     this.updatedAt,
   });
 
+  String? id;
   String firstName;
   String lastName;
   String email;
@@ -41,6 +43,7 @@ class UserModel {
   DateTime? updatedAt;
 
   factory UserModel.fromJson(Map<String, dynamic> json) => UserModel(
+        id: json["_id"],
         firstName: json["first_name"],
         lastName: json["last_name"],
         email: json["email"],
@@ -65,6 +68,7 @@ class UserModel {
       );
 
   Map<String, dynamic> toJson() => {
+        "_id": id,
         "first_name": firstName,
         "last_name": lastName,
         "email": email,

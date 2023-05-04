@@ -12,7 +12,7 @@ class ProjectCard extends StatelessWidget {
     var dur = int.parse(projectModel.duration);
     return Container(
       width: 240,
-      height: 220,
+      height: 230,
       margin: const EdgeInsets.all(5),
       decoration: const BoxDecoration(
           shape: BoxShape.rectangle,
@@ -87,6 +87,7 @@ class ProjectCard extends StatelessWidget {
                         MaterialPageRoute(
                           builder: (context) => ProjectDetail(
                             projectModel: projectModel,
+                            isOwn: true,
                           ),
                         ),
                       );

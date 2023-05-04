@@ -1,9 +1,11 @@
 import 'package:dev_connect/Model/ProjectModel.dart';
 import 'package:dev_connect/Model/TechModel.dart';
 import 'package:dev_connect/Screens/ProjectScreens/ProjectDetailScreen.dart';
+import 'package:dev_connect/Services/ProjectsServices.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/src/widgets/framework.dart';
 import 'package:flutter/src/widgets/placeholder.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class ProjectListItem extends StatefulWidget {
   final ProjectModel projectModel;
@@ -18,12 +20,38 @@ class ProjectListItem extends StatefulWidget {
 }
 
 class _ProjectListItemState extends State<ProjectListItem> {
+  final Future<SharedPreferences> _prefs = SharedPreferences.getInstance();
   late int dur;
+  bool liked = false;
+
+  Future<void> _likeProject() async {
+    final SharedPreferences prefs = await _prefs;
+    List<Tech> tech = widget.projectModel.tech ?? [];
+
+    liked = true;
+
+    await ProjectService().showInterestInProject(
+        prefs.getString('token').toString(),
+        widget.projectModel.id.toString() ?? "",
+        tech);
+    setState(() {});
+  }
+
+  Future<void> _loadProject() async {
+    final SharedPreferences prefs = await _prefs;
+    List<String> likedPrj = prefs.getStringList("interests") ?? [];
+    String projectID = widget.projectModel.id.toString();
+
+    setState(() {
+      liked = likedPrj.contains(projectID);
+    });
+  }
 
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
+    _loadProject();
     setState(() {
       dur = int.parse(widget.projectModel.duration);
     });
@@ -59,9 +87,13 @@ class _ProjectListItemState extends State<ProjectListItem> {
                       Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          Text(widget.projectModel.name,
-                              style: const TextStyle(
-                                  fontSize: 18, fontWeight: FontWeight.w600)),
+                          Container(
+                            width: MediaQuery.of(context).size.width * 0.4,
+                            child: Text(widget.projectModel.name,
+                                overflow: TextOverflow.ellipsis,
+                                style: const TextStyle(
+                                    fontSize: 18, fontWeight: FontWeight.w600)),
+                          ),
                           const SizedBox(width: 12),
                           CircleAvatar(
                               radius: 12,
@@ -77,24 +109,27 @@ class _ProjectListItemState extends State<ProjectListItem> {
                         ],
                       ),
                       const SizedBox(height: 8),
-                      Wrap(
-                        spacing: 4,
-                        runSpacing: 4,
-                        alignment: WrapAlignment.start,
-                        children: List.generate(
-                          widget.projectModel.tech?.length ?? 0,
-                          (index) {
-                            return Container(
-                                padding: const EdgeInsets.all(5),
-                                decoration: BoxDecoration(
-                                    borderRadius: BorderRadius.circular(5),
-                                    color: const Color.fromARGB(
-                                        128, 155, 155, 155)),
-                                child: Text(
-                                  widget.projectModel.tech![index].name,
-                                  style: const TextStyle(fontSize: 10),
-                                ));
-                          },
+                      Container(
+                        width: MediaQuery.of(context).size.width * 0.6,
+                        child: Wrap(
+                          spacing: 4,
+                          runSpacing: 4,
+                          alignment: WrapAlignment.start,
+                          children: List.generate(
+                            widget.projectModel.tech?.length ?? 0,
+                            (index) {
+                              return Container(
+                                  padding: const EdgeInsets.all(5),
+                                  decoration: BoxDecoration(
+                                      borderRadius: BorderRadius.circular(5),
+                                      color: const Color.fromARGB(
+                                          128, 155, 155, 155)),
+                                  child: Text(
+                                    widget.projectModel.tech![index].name,
+                                    style: const TextStyle(fontSize: 10),
+                                  ));
+                            },
+                          ),
                         ),
                       ),
                       const SizedBox(height: 8),
@@ -104,10 +139,47 @@ class _ProjectListItemState extends State<ProjectListItem> {
                   ),
                   const Spacer(),
                   (widget.isOwn
-                      ? IconButton(
-                          onPressed: () {}, icon: const Icon(Icons.more_horiz))
+                      ? PopupMenuButton(
+                          itemBuilder: (context) => [
+                                PopupMenuItem<int>(
+                                  child: Row(
+                                    children: const [
+                                      Icon(
+                                        Icons.edit,
+                                      ),
+                                      SizedBox(
+                                        width: 4,
+                                      ),
+                                      Text(
+                                        "Edit",
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                                PopupMenuItem<int>(
+                                  value: 0,
+                                  child: Row(
+                                    children: const [
+                                      Icon(
+                                        Icons.delete_forever,
+                                      ),
+                                      SizedBox(
+                                        width: 4,
+                                      ),
+                                      Text(
+                                        "Delete",
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ])
                       : IconButton(
-                          onPressed: () {}, icon: const Icon(Icons.favorite))),
+                          onPressed: () {
+                            _likeProject();
+                          },
+                          icon: const Icon(Icons.favorite),
+                          color: liked ? Colors.red : Colors.grey,
+                        )),
                   IconButton(
                       onPressed: () {
                         Navigator.push(
@@ -115,6 +187,7 @@ class _ProjectListItemState extends State<ProjectListItem> {
                             MaterialPageRoute(
                                 builder: (context) => ProjectDetail(
                                       projectModel: widget.projectModel,
+                                      isOwn: widget.isOwn,
                                     )));
                       },
                       icon: const Icon(Icons.chevron_right)),

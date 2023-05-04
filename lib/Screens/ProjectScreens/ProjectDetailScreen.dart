@@ -4,6 +4,7 @@ import 'package:dev_connect/Model/ProjectModel.dart';
 import 'package:dev_connect/Model/TechModel.dart';
 import 'package:dev_connect/Model/UserModel.dart';
 import 'package:dev_connect/Screens/ProjectScreens/projectInvites.dart';
+import 'package:dev_connect/Services/ProjectsServices.dart';
 import 'package:dev_connect/widgets/MemberListItem.dart';
 import 'package:dev_connect/widgets/ProjectListItemWidget.dart';
 import 'package:flutter/material.dart';
@@ -11,21 +12,58 @@ import 'package:modal_progress_hud_nsn/modal_progress_hud_nsn.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class ProjectDetail extends StatefulWidget {
-  const ProjectDetail({Key? key, required this.projectModel}) : super(key: key);
+  const ProjectDetail(
+      {Key? key, required this.projectModel, required this.isOwn})
+      : super(key: key);
   final ProjectModel projectModel;
+  final bool isOwn;
 
   @override
   State<ProjectDetail> createState() => _ProjectDetailState();
 }
 
 class _ProjectDetailState extends State<ProjectDetail> {
+  final Future<SharedPreferences> _prefs = SharedPreferences.getInstance();
+
+  List<UserModel>? users = [];
   bool _isLoading = false;
   late int dur;
+
+// Join projects
+  Future<void> _joinInProject() async {
+    final SharedPreferences prefs = await _prefs;
+
+    await ProjectService().sendJoinRequest(
+        prefs.getString('token').toString(),
+        widget.projectModel.id.toString() ?? "",
+        prefs.getString('uid').toString());
+  }
+
+// Get invitations list
+  Future<void> _getInvitedUsers() async {
+    final SharedPreferences prefs = await _prefs;
+
+    var userList = await ProjectService().listJoinRequests(
+        prefs.getString('token').toString(),
+        widget.projectModel.id.toString() ?? "");
+
+    users = userList;
+    setState(() {});
+  }
+
+// delete project
+  Future<void> _deleteProject() async {
+    final SharedPreferences prefs = await _prefs;
+
+    await ProjectService().deleteProject(prefs.getString('token').toString(),
+        widget.projectModel.id.toString() ?? "");
+  }
 
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
+    _getInvitedUsers();
     setState(() {
       dur = int.parse(widget.projectModel.duration);
     });
@@ -60,49 +98,56 @@ class _ProjectDetailState extends State<ProjectDetail> {
                     ),
                   ),
                   const Spacer(),
-                  PopupMenuButton(
-                    icon: const Icon(
-                        Icons.menu), //don't specify icon if you want 3 dot menu
-                    color: Colors.yellow,
-                    itemBuilder: (context) => [
-                      PopupMenuItem<int>(
-                        child: Row(
-                          children: const [
-                            Icon(
-                              Icons.edit,
-                              color: Colors.black,
+                  widget.isOwn
+                      ? PopupMenuButton(
+                          icon: const Icon(Icons
+                              .menu), //don't specify icon if you want 3 dot menu
+                          color: Colors.yellow,
+                          itemBuilder: (context) => [
+                            PopupMenuItem<int>(
+                              child: Row(
+                                children: const [
+                                  Icon(
+                                    Icons.edit,
+                                    color: Colors.black,
+                                  ),
+                                  SizedBox(
+                                    width: 4,
+                                  ),
+                                  Text(
+                                    "Edit",
+                                    style: TextStyle(color: Colors.black),
+                                  ),
+                                ],
+                              ),
                             ),
-                            SizedBox(
-                              width: 4,
-                            ),
-                            Text(
-                              "Edit",
-                              style: TextStyle(color: Colors.black),
+                            PopupMenuItem<int>(
+                              value: 0,
+                              onTap: () {
+                                _deleteProject();
+                              },
+                              child: Row(
+                                children: const [
+                                  Icon(
+                                    Icons.delete_forever,
+                                    color: Colors.black,
+                                  ),
+                                  SizedBox(
+                                    width: 4,
+                                  ),
+                                  Text(
+                                    "Delete",
+                                    style: TextStyle(color: Colors.black),
+                                  ),
+                                ],
+                              ),
                             ),
                           ],
+                          onSelected: (item) => {print(item)},
+                        )
+                      : const SizedBox(
+                          width: 0,
                         ),
-                      ),
-                      PopupMenuItem<int>(
-                        value: 0,
-                        child: Row(
-                          children: const [
-                            Icon(
-                              Icons.delete_forever,
-                              color: Colors.black,
-                            ),
-                            SizedBox(
-                              width: 4,
-                            ),
-                            Text(
-                              "Delete",
-                              style: TextStyle(color: Colors.black),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ],
-                    onSelected: (item) => {print(item)},
-                  ),
                 ],
               ),
             ),
@@ -211,12 +256,16 @@ class _ProjectDetailState extends State<ProjectDetail> {
                           const Spacer(),
                           IconButton(
                             onPressed: () {
-                              Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                      builder: (context) => ProjectInvites(
-                                          users: widget.projectModel.users ??
-                                              [])));
+                              widget.isOwn
+                                  ? Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (context) => ProjectInvites(
+                                          users: users ?? [],
+                                        ),
+                                      ),
+                                    )
+                                  : _joinInProject();
                             },
                             icon: const Icon(
                               Icons.add_circle_outline_rounded,
@@ -244,7 +293,9 @@ class _ProjectDetailState extends State<ProjectDetail> {
                                             UserModel(
                                                 firstName: "firstName",
                                                 lastName: "lastName",
-                                                email: "email")),
+                                                email: "email"),
+                                        projectId:
+                                            widget.projectModel.id.toString()),
                                   )
                                 : [],
                           ),
